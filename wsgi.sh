@@ -14,8 +14,8 @@ LE_DIR='/etc/letsencrypt/live'
 
 AUTH=''
 
-while [ $# -gt 2 ]; do
-    case "$3" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         --wsgi)
         WSGI_FILENAME=$4
         ;;
@@ -24,6 +24,18 @@ while [ $# -gt 2 ]; do
         ;;
         --nostatic)
         STATIC_ALIAS=''
+        ;;
+		-h|--help)
+			echo "
+Generate a wsgi configuration file
+
+Usage: wsgi.sh <domain> <documentRoot>
+Flags:
+    --wsgi: Set wsgi filepath relative to the documentRoot
+    --env: Set the environment folder relative to the documentRoot
+    --nostatic: Don't add the static alias directive"
+			exit 0
+			;;
     esac
     shift
 done

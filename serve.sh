@@ -5,8 +5,8 @@ LE_DIR='/etc/letsencrypt/live'
 
 AUTH=''
 
-while [ $# -gt 2 ]; do
-    case "$3" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         -a|--auth)
             AUTH="
         AuthType Basic
@@ -14,6 +14,15 @@ while [ $# -gt 2 ]; do
         AuthUserFile /etc/apache2/.htpasswd
         Require valid-user"
         ;;
+		-h|--help)
+			echo "
+Generate a static webserver configuration file
+
+Usage: serve.sh <domain> <documentRoot>
+Flags:
+	-a, --auth: Add basic authentication"
+			exit 0
+			;;
     esac
     shift
 done

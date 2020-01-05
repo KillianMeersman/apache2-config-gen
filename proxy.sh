@@ -5,15 +5,24 @@ LE_DIR='/etc/letsencrypt/live'
 
 AUTH=''
 
-while [ $# -gt 2 ]; do
-    case "$3" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         -a|--auth)
             AUTH="
 			AuthType Basic
 			AuthName 'Authentication required'
 			AuthUserFile /etc/apache2/.htpasswd
 			Require valid-user"
-        ;;
+        	;;
+		-h|--help)
+			echo "
+Generate a reverse proxy configuration file
+
+Usage: proxy.sh <domain> <port>
+Flags:
+	-a, --auth: Add basic authentication"
+			exit 0
+			;;
     esac
     shift
 done
@@ -36,8 +45,8 @@ TEMPLATE="<VirtualHost *:80>
 		</Location>
 
 		<IfModule mod_http2.c>
-        	Protocols h2 http/1.1
-    	</IfModule>
+			Protocols h2 http/1.1
+		</IfModule>
 		
 		SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
 		SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
