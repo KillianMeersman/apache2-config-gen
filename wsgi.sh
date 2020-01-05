@@ -41,6 +41,14 @@ TEMPLATE="<VirtualHost *:80>
 
     $STATIC_ALIAS
 
+    <Directory $ROOT>
+        Require all granted
+    </Directory>
+
+    <IfModule mod_http2.c>
+        Protocols h2 http/1.1
+    </IfModule>
+
     SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
     SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
 </VirtualHost>

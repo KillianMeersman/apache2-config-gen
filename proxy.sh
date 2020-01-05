@@ -34,6 +34,10 @@ TEMPLATE="<VirtualHost *:80>
 		<Location />
 			Require all granted$AUTH
 		</Location>
+
+		<IfModule mod_http2.c>
+        	Protocols h2 http/1.1
+    	</IfModule>
 		
 		SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
 		SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
