@@ -3,7 +3,11 @@ ROOT=$2
 
 VIRTUALENV_NAME='env'
 WSGI_FILENAME='wsgi.py'
-STATIC_ALIAS="Alias /static $ROOT/static"
+STATIC_ALIAS="Alias /static $ROOT/static
+
+    <Directory $ROOT/static>
+            Require all granted
+    </Directory>"
 
 
 LE_DIR='/etc/letsencrypt/live'
