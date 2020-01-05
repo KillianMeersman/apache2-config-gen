@@ -3,6 +3,7 @@ ROOT=$2
 
 VIRTUALENV_NAME='env'
 WSGI_FILENAME='wsgi.py'
+STATIC_ALIAS="Alias /static $ROOT/static"
 
 
 LE_DIR='/etc/letsencrypt/live'
@@ -17,6 +18,8 @@ while [ $# -gt 2 ]; do
         --env)
         VIRTUALENV_NAME=$4
         ;;
+        --nostatic)
+        STATIC_ALIAS=''
     esac
     shift
 done
@@ -36,12 +39,7 @@ TEMPLATE="<VirtualHost *:80>
     WSGIProcessGroup $DOMAIN
     WSGIScriptAlias / $ROOT/$WSGI_FILENAME process-group=$DOMAIN
 
-    <Directory $ROOT>
-        Require all granted
-        <Files $WSGI_FILENAME>
-            Require all denied
-        </Files>
-    </Directory>
+    $STATIC_ALIAS
 
     SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
     SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
