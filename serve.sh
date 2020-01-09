@@ -29,8 +29,8 @@ Flags:
 
         --fallback)
         index='/index.html'
-        if [ ! -z $4 ]; then
-            index="$4"
+        if [ ! -z $2 ]; then
+            index="$2"
         fi
         fallback="
     FallbackResource $index
