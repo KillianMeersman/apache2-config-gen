@@ -1,29 +1,27 @@
-DOMAIN=$1
-ROOT=$2
+domain=$1
+root=$2
 
-VIRTUALENV_NAME='env'
-WSGI_FILENAME='wsgi.py'
-STATIC_ALIAS="Alias /static $ROOT/static
+virtualenv_name='env'
+wsgi_filename='wsgi.py'
+static_alias="Alias /static $root/static
 
-    <Directory $ROOT/static>
+    <Directory $root/static>
             Require all granted
     </Directory>"
 
 
-LE_DIR='/etc/letsencrypt/live'
-
-AUTH=''
+ssl_dir='/etc/letsencrypt/live'
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --wsgi)
-        WSGI_FILENAME=$4
+        wsgi_filename=$4
         ;;
         --env)
-        VIRTUALENV_NAME=$4
+        virtualenv_name=$4
         ;;
         --nostatic)
-        STATIC_ALIAS=''
+        static_alias=''
         ;;
 		-h|--help)
 			echo "
@@ -40,24 +38,24 @@ Flags:
     shift
 done
 
-TEMPLATE="<VirtualHost *:80>
-    ServerName $DOMAIN
+template="<VirtualHost *:80>
+    ServerName $domain
 
-    Redirect permanent / https://$DOMAIN
+    Redirect permanent / https://$domain
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
-    ServerName $DOMAIN
-    DocumentRoot $ROOT
+    ServerName $domain
+    DocumentRoot $root
 
-    WSGIDaemonProcess $DOMAIN python-home=$ROOT/$VIRTUALENV_NAME python-path=$ROOT
-    WSGIProcessGroup $DOMAIN
-    WSGIScriptAlias / $ROOT/$WSGI_FILENAME process-group=$DOMAIN
+    WSGIDaemonProcess $domain python-home=$root/$virtualenv_name python-path=$root
+    WSGIProcessGroup $domain
+    WSGIScriptAlias / $root/$wsgi_filename process-group=$domain
 
-    $STATIC_ALIAS
+    $static_alias
 
-    <Directory $ROOT>
+    <Directory $root>
         Require all granted
     </Directory>
 
@@ -65,9 +63,9 @@ TEMPLATE="<VirtualHost *:80>
         Protocols h2 http/1.1
     </IfModule>
 
-    SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
-    SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
+    SSLCertificateFile $ssl_dir/$domain/fullchain.pem
+    SSLCertificateKeyFile $ssl_dir/$domain/privkey.pem
 </VirtualHost>
 </IfModule>"
 
-echo "$TEMPLATE"
+echo "$template"

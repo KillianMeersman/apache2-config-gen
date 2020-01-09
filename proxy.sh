@@ -1,14 +1,14 @@
-DOMAIN=$1
-PORT=$2
+domain=$1
+port=$2
 
-LE_DIR='/etc/letsencrypt/live'
+ssl_dir='/etc/letsencrypt/live'
 
-AUTH=''
+auth=''
 
 while [ $# -gt 0 ]; do
     case "$1" in
         -a|--auth)
-            AUTH="
+            auth="
 			AuthType Basic
 			AuthName 'Authentication required'
 			AuthUserFile /etc/apache2/.htpasswd
@@ -27,30 +27,30 @@ Flags:
     shift
 done
 
-TEMPLATE="<VirtualHost *:80>
-	ServerName $DOMAIN
+template="<VirtualHost *:80>
+	ServerName $domain
 
-	Redirect permanent / https://$DOMAIN
+	Redirect permanent / https://$domain
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 	<VirtualHost *:443>
-		ServerName $DOMAIN
+		ServerName $domain
 	
-		ProxyPass / http://127.0.0.1:$PORT/
-		ProxyPassReverse / http://127.0.0.1:$PORT/
+		ProxyPass / http://127.0.0.1:$port/
+		ProxyPassReverse / http://127.0.0.1:$port/
 
 		<Location />
-			Require all granted$AUTH
+			Require all granted$auth
 		</Location>
 
 		<IfModule mod_http2.c>
 			Protocols h2 http/1.1
 		</IfModule>
 		
-		SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
-		SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
+		SSLCertificateFile $ssl_dir/$domain/fullchain.pem
+		SSLCertificateKeyFile $ssl_dir/$domain/privkey.pem
 	</VirtualHost>
 </IfModule>"
 
-echo "$TEMPLATE"
+echo "$template"

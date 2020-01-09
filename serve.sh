@@ -1,54 +1,66 @@
-DOMAIN=$1
-ROOT=$2
+domain=$1
+root=$2
 
-LE_DIR='/etc/letsencrypt/live'
+ssl_dir='/etc/letsencrypt/live'
 
-AUTH=''
+auth=''
+fallback=''
 
 while [ $# -gt 0 ]; do
     case "$1" in
         -a|--auth)
-            AUTH="
+            auth="
         AuthType Basic
         AuthName 'Authentication required'
         AuthUserFile /etc/apache2/.htpasswd
         Require valid-user"
         ;;
+
 		-h|--help)
 			echo "
 Generate a static webserver configuration file
 
 Usage: serve.sh <domain> <documentRoot>
 Flags:
-	-a, --auth: Add basic authentication"
+    -a, --auth: Add basic authentication
+    --fallback: Add a global fallback for single page applications using HTML5 history mode routing"
 			exit 0
 			;;
+
+        --fallback)
+        index='/index.html'
+        if [ ! -z $4 ]; then
+            index="$4"
+        fi
+        fallback="
+    FallbackResource $index
+        "
     esac
     shift
 done
 
-TEMPLATE="<VirtualHost *:80>
-    ServerName $DOMAIN
+template="<VirtualHost *:80>
+    ServerName $domain
 
-    Redirect permanent / https://$DOMAIN
+    Redirect permanent / https://$domain
 </VirtualHost>
 
 <IfModule mod_ssl.c>
 <VirtualHost *:443>
-    ServerName $DOMAIN
-    DocumentRoot $ROOT
-
-    <Directory $ROOT>
-        Require all granted$AUTH
+    ServerName $domain
+    DocumentRoot $root
+    $fallback
+    <Directory $root>
+        Require all granted$auth
     </Directory>
 
     <IfModule mod_http2.c>
         Protocols h2 http/1.1
     </IfModule>
 
-    SSLCertificateFile $LE_DIR/$DOMAIN/fullchain.pem
-    SSLCertificateKeyFile $LE_DIR/$DOMAIN/privkey.pem
+    SSLCertificateFile $ssl_dir/$domain/fullchain.pem
+    SSLCertificateKeyFile $ssl_dir/$domain/privkey.pem
 </VirtualHost>
 </IfModule>"
 
-echo "$TEMPLATE"
+echo "$template"
