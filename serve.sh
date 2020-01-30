@@ -73,7 +73,7 @@ template="<VirtualHost *:80>
     SSLOpenSSLConfCmd DHParameters '/etc/ssl/certs/dhparam.pem'
 
     LoadModule headers_module modules/mod_headers.so
-    Header always set Strict-Transport-Security "max-age=63072000; includeSubdomains;"
+    Header always set Strict-Transport-Security \"max-age=63072000; includeSubdomains;\"
     Header always set X-Frame-Options DENY
 </VirtualHost>
 </IfModule>"
