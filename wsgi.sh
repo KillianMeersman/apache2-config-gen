@@ -57,6 +57,7 @@ template="<VirtualHost *:80>
     WSGIDaemonProcess $domain python-home=$root/$virtualenv_name python-path=$root
     WSGIProcessGroup $domain
     WSGIScriptAlias / $root/$wsgi_filename process-group=$domain
+    WSGIPassAuthorization On
 
     $static_alias
 
